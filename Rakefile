@@ -1,4 +1,6 @@
-require 'rubygems'
+require 'rake/testtask'
+require 'rake/packagetask'
+require 'rake/rdoctask'
 require 'rake'
 
 begin
@@ -12,8 +14,9 @@ begin
     gem.authors = ["jduff"]
     
     gem.add_dependency('alchemist')
+    gem.add_dependency('numerizer')
     
-    gem.add_development_dependency('context')
+    gem.add_development_dependency('jeremymcanally-context')
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
     
     Jeweler::GemcutterTasks.new

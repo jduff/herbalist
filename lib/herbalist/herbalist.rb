@@ -1,4 +1,8 @@
 module Herbalist
+  # collect up all the possible unit types that Alchemist can handle
+  POSSIBLE_UNITS = Alchemist.conversion_table.collect{|k,v| v.keys}.flatten.uniq
+  MULTIWORD_UNITS = POSSIBLE_UNITS.collect{|u| u.to_s}.grep(/_/)
+  
   class << self
     def parse(text)
       text = text.dup
@@ -29,14 +33,25 @@ module Herbalist
       # use Numerizer to convert any numbers in words to digets in the string
       text = Numerizer.numerize(text)
       puts "NUMERIZED: #{text}" if Herbalist.debug
+      
       text = evaluate_fractions(text)
       puts "FRACTIONED: #{text}" if Herbalist.debug
+      
+      text = normalize_multiword(text)
+      puts "MULTIWORDED: #{text}" if Herbalist.debug
       return text
     end
     
     # takes fractions in the string (1/4) and converts them to floats (0.25)
     def evaluate_fractions(text)
       text.gsub(/(\d+)\/(\d+)/) { ($1.to_f/$2.to_f).to_s }
+    end
+    
+    def normalize_multiword(text)
+      MULTIWORD_UNITS.each do |unit|
+        text = text.gsub(/#{unit.split('_').join(' ')}/i, unit)
+      end
+      text
     end
   end
   
@@ -78,9 +93,6 @@ module Herbalist
   
   
   class Tag
-    # collect up all the possible unit types that Alchemist can handle
-    @@possible_units = Alchemist.conversion_table.collect{|k,v| v.keys}.flatten.uniq
-    
     attr_accessor :value, :type
 
 		def initialize(type, value)
@@ -109,22 +121,27 @@ module Herbalist
     # check the token and see if it is a type of unit that Alchemist can handle
     # then tag the token with that unit type
     def self.scan_for_units(token)
-      word = token.word.downcase
+      return nil if token.get_tag(:number)
+      # all units
+      POSSIBLE_UNITS.each do |unit| 
+        if token.word.length<=2
+          return Tag.new(:unit, unit) if token.word == unit.to_s
+        elsif token.word =~ /^#{unit.to_s}$/i
+          return Tag.new(:unit, unit)
+        end
+      end
+      
       # try si units with prefixes (kilo, deca etc)
       Alchemist.unit_prefixes.each do |prefix, value|
-        if word.downcase =~ /^#{prefix.to_s.downcase}.+/
+        if token.word =~ /^#{prefix.to_s}.+/i
           Alchemist.si_units.each do |unit|
-            if unit.to_s.downcase==word.gsub(/^#{prefix.to_s.downcase}/,'')
+            if unit.to_s=~/#{token.word.gsub(/^#{prefix.to_s}/i,'')}/i
               return Tag.new(:unit, "#{prefix}#{unit}") 
             end
           end
         end
       end
-      
-      # everything else
-      @@possible_units.each do |unit| 
-        return Tag.new(:unit, unit) if unit.to_s.downcase == word
-      end
+
       return nil
     end
     

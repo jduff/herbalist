@@ -39,15 +39,29 @@ class HerbalistTest < Test::Unit::TestCase
     assert_equal 1.25.liters, Herbalist.parse('one and a quarter liters')
   end
   
+  should "parse multiword units" do
+    assert_equal 1.cubic_meter, Herbalist.parse('one Cubic Meter')
+    assert_equal 15.kilowatt_hours, Herbalist.parse('fifteen kilowatt Hours')
+    assert_equal 21.5.tropical_years, Herbalist.parse('21.5 tropical years')
+  end
+  
   should "ignore units of measure that alchemist does not understand" do
     assert_equal nil, Herbalist.parse('2 awesomes')
   end
   
-  # add tests for all unitx Alchemist can handle
+  # add tests for all units Alchemist can handle
   Alchemist.conversion_table.collect{|k,v| v.keys}.flatten.uniq.each do |unit|
     should "parse #{unit}" do
-      assert_equal 1.send(unit).to_f, Herbalist.parse("1 #{unit}").to_f
+      assert_equal 1.send(unit), Herbalist.parse("1 #{unit}")
       assert_equal 2.5.send(unit).to_f, Herbalist.parse("2.5 #{unit}").to_f
+    end
+    
+    # tests for all multi word units
+    if (words = unit.to_s.split('_')).length > 1
+      should "parse multiword unit '#{words.join(' ')}'" do
+        assert_equal 1.send(unit).to_f, Herbalist.parse("1 #{words.join(' ')}").to_f
+        assert_equal 2.5.send(unit).to_f, Herbalist.parse("2.5 #{words.join(' ')}").to_f
+      end
     end
   end
 end

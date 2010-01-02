@@ -45,6 +45,20 @@ class HerbalistTest < Test::Unit::TestCase
     assert_equal 21.5.tropical_years, Herbalist.parse('21.5 tropical years')
   end
   
+  should "parse units from within a string of other text" do
+    assert_equal 1.cup, Herbalist.parse("1 Cup onion chopped")
+    assert_equal 1.25.ounces, Herbalist.parse("1 Package (1.25 ounces) taco seasoning mix")
+    assert_equal 16.ounces, Herbalist.parse("1 Can (16 ounces) tomatoes, undrained")
+    assert_equal 6.cups, Herbalist.parse("and 6 Cups turkey broth")
+    
+    assert_equal 2.5.football_fields, Herbalist.parse("it was two and a half football fields")
+    assert_equal 15.meters, Herbalist.parse("John ran 15 meters")
+  end
+  
+  should "not match can to ccandela units" do
+    assert_equal nil, Herbalist.parse("1 Can")
+  end
+  
   should "ignore units of measure that alchemist does not understand" do
     assert_equal nil, Herbalist.parse('2 awesomes')
   end
@@ -53,14 +67,14 @@ class HerbalistTest < Test::Unit::TestCase
   Alchemist.conversion_table.collect{|k,v| v.keys}.flatten.uniq.each do |unit|
     should "parse #{unit}" do
       assert_equal 1.send(unit), Herbalist.parse("1 #{unit}")
-      assert_equal 2.5.send(unit).to_f, Herbalist.parse("2.5 #{unit}").to_f
+      assert_equal 2.5.send(unit), Herbalist.parse("2.5 #{unit}")
     end
     
     # tests for all multi word units
     if (words = unit.to_s.split('_')).length > 1
       should "parse multiword unit '#{words.join(' ')}'" do
-        assert_equal 1.send(unit).to_f, Herbalist.parse("1 #{words.join(' ')}").to_f
-        assert_equal 2.5.send(unit).to_f, Herbalist.parse("2.5 #{words.join(' ')}").to_f
+        assert_equal 1.send(unit), Herbalist.parse("1 #{words.join(' ')}")
+        assert_equal 2.5.send(unit), Herbalist.parse("2.5 #{words.join(' ')}")
       end
     end
   end

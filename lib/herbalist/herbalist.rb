@@ -13,12 +13,18 @@ module Herbalist
       return nil unless @tokens.length>1
       
       # at the moment all we handle is a number followed by a unit
-      if (num=@tokens[0].get_tag(:number)) && (unit=@tokens[1].get_tag(:unit))
-        puts "NUM: #{num.value}" if Herbalist.debug
-        puts "UNIT: #{unit.value}" if Herbalist.debug
-        return num.value.send(unit.value)
+      last_number = nil
+      result = nil
+      @tokens.each do |token|
+        if last_number && (unit=token.get_tag(:unit))
+          result = last_number.send(unit.value)
+          break
+        elsif (num=token.get_tag(:number))
+          last_number = num.value
+        end
       end
-      return nil
+      
+      return result
     end
     
     def tokenize(text)
@@ -112,8 +118,8 @@ module Herbalist
 	  # check the token to see if if it is a number
 	  # then tag it
 	  def self.scan_for_numbers(token)
-	    if token.word =~ /^\d*$/ || token.word =~ /^\d*\.\d*$/
-	      return Tag.new(:number, token.word.to_f)
+	    if token.word =~ /(^|\W)(\d*\.\d+)($|\W)/ || token.word =~ /(^|\W)(\d+)($|\W)/
+	      return Tag.new(:number, $2.to_f)
       end
       return nil
     end
@@ -124,9 +130,9 @@ module Herbalist
       return nil if token.get_tag(:number)
       # all units
       POSSIBLE_UNITS.each do |unit| 
-        if token.word.length<=2
+        if token.word.length<=2 # special matching for short forms ex. Mi
           return Tag.new(:unit, unit) if token.word == unit.to_s
-        elsif token.word =~ /^#{unit.to_s}$/i
+        elsif token.word =~ /(^|\W)#{unit.to_s}($|\W)/i
           return Tag.new(:unit, unit)
         end
       end
@@ -135,7 +141,7 @@ module Herbalist
       Alchemist.unit_prefixes.each do |prefix, value|
         if token.word =~ /^#{prefix.to_s}.+/i
           Alchemist.si_units.each do |unit|
-            if unit.to_s=~/#{token.word.gsub(/^#{prefix.to_s}/i,'')}/i
+            if unit.to_s=~/#{token.word.gsub(/^#{prefix.to_s}/i,'')}$/i
               return Tag.new(:unit, "#{prefix}#{unit}") 
             end
           end

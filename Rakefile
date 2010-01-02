@@ -14,7 +14,7 @@ begin
     gem.authors = ["jduff"]
     
     gem.add_dependency('alchemist')
-    gem.add_dependency('numerizer')
+    gem.add_dependency('numerizer', '>= 0.1.1')
     
     gem.add_development_dependency('jeremymcanally-context')
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings

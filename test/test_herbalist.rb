@@ -27,11 +27,23 @@ class HerbalistTest < Test::Unit::TestCase
     assert_equal 2.5.miles, Herbalist.parse('2.5 Miles')
   end
   
+  should "parse numbers in words" do
+    assert_equal 1.kilometer, Herbalist.parse('one Kilometer')
+    assert_equal 15.kilometers, Herbalist.parse('fifteen Kilometers')
+    assert_equal 21.5.miles, Herbalist.parse('twenty-one and a half Miles')
+  end
+  
+  should "parse fractions in words" do
+    assert_equal 0.25.cup, Herbalist.parse('a quarter cup')
+    assert_equal 0.5.teaspoon, Herbalist.parse('a half teaspoon')
+    assert_equal 1.25.liters, Herbalist.parse('one and a quarter liters')
+  end
+  
   should "ignore units of measure that alchemist does not understand" do
     assert_equal nil, Herbalist.parse('2 awesomes')
   end
   
-  
+  # add tests for all unitx Alchemist can handle
   Alchemist.conversion_table.collect{|k,v| v.keys}.flatten.uniq.each do |unit|
     should "parse #{unit}" do
       assert_equal 1.send(unit).to_f, Herbalist.parse("1 #{unit}").to_f

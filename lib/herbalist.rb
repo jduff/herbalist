@@ -3,7 +3,9 @@ require 'alchemist'
 
 require 'herbalist/herbalist'
 
-unless Alchemist.method_defined?(:si_units)
+# reopen Alchemist and create an accessor for si_units
+# hopefully a future patch will mean we can remove this
+unless Alchemist.respond_to?(:si_units)
   module Alchemist
     def self.si_units
       @@si_units

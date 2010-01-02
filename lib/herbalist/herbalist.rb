@@ -1,6 +1,7 @@
 module Herbalist
   class << self
     def parse(text)
+      text = text.dup
       puts "TEXT: #{text}" if Herbalist.debug
       @tokens = self.tokenize(text).select { |token| token.tagged? }
       puts "TOKENS: #{@tokens}" if Herbalist.debug
@@ -17,8 +18,25 @@ module Herbalist
     end
     
     def tokenize(text)
+      # cleanup the string before tokenizing
+      text = normalize(text)
       @tokens = text.split(' ').collect { |word| Token.new(word) }
       @tokens = Tag.scan(@tokens)
+    end
+    
+    private
+    def normalize(text)
+      # use Numerizer to convert any numbers in words to digets in the string
+      text = Numerizer.numerize(text)
+      puts "NUMERIZED: #{text}" if Herbalist.debug
+      text = evaluate_fractions(text)
+      puts "FRACTIONED: #{text}" if Herbalist.debug
+      return text
+    end
+    
+    # takes fractions in the string (1/4) and converts them to floats (0.25)
+    def evaluate_fractions(text)
+      text.gsub(/(\d+)\/(\d+)/) { ($1.to_f/$2.to_f).to_s }
     end
   end
   
@@ -79,7 +97,7 @@ module Herbalist
 		  tokens
 	  end
 	  
-	  # check the tocken to see if if it is a number
+	  # check the token to see if if it is a number
 	  # then tag it
 	  def self.scan_for_numbers(token)
 	    if token.word =~ /^\d*$/ || token.word =~ /^\d*\.\d*$/

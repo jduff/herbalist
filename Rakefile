@@ -7,13 +7,13 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "herbalist"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{Herbalist is a natural language measurements parser.}
+    gem.description = %Q{Herbalist is a natural language measurements parser. It is built on top of the Alchemist[http://github.com/toastyapps/alchemist] gem and draws heavily from the Chronic[http://github.com/evaryont/chronic].}
     gem.email = "duff.john@gmail.com"
     gem.homepage = "http://github.com/jduff/herbalist"
     gem.authors = ["jduff"]
     
-    gem.add_dependency('alchemist')
+    gem.add_dependency('alchemist', '>= 0.1.2')
     gem.add_dependency('numerizer', '>= 0.1.1')
     
     gem.add_development_dependency('jeremymcanally-context')

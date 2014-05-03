@@ -14,6 +14,7 @@ unless Alchemist.respond_to?(:si_units)
 end
 
 module Herbalist
+  Alchemist.setup
   class << self
     attr_accessor :debug
   end

@@ -1,0 +1,23 @@
+PATH
+  remote: .
+  specs:
+    herbalist (0.0.1)
+      alchemist (~> 0.1.7)
+      numerizer (~> 0.2.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    alchemist (0.1.7)
+    numerizer (0.2.0)
+    rake (10.3.1)
+    shoulda-context (1.2.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.6)
+  herbalist!
+  rake
+  shoulda-context

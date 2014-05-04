@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    herbalist (0.0.1)
-      alchemist (~> 0.1.7)
-      numerizer (~> 0.2.0)
+    herbalist (0.1.0)
+      alchemist (~> 0.1)
+      numerizer (~> 0.2)
 
 GEM
   remote: https://rubygems.org/

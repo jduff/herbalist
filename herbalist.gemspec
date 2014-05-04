@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["jduff"]
   spec.email         = ["duff.john@gmail.com"]
   spec.summary       = %q{Herbalist is a natural language measurements parser.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/jduff/herbalist"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
@@ -17,8 +17,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "alchemist", "~>0.1.7"
-  spec.add_dependency "numerizer", "~>0.2.0"
+  spec.add_dependency "alchemist", "~>0.1"
+  spec.add_dependency "numerizer", "~>0.2"
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake"
 end

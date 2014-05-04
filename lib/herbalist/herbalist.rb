@@ -1,6 +1,6 @@
 module Herbalist
   # collect up all the possible unit types that Alchemist can handle
-  POSSIBLE_UNITS = Alchemist.conversion_table.collect{|k,v| v.keys}.flatten.uniq
+  POSSIBLE_UNITS = Alchemist.library.categories.map{|c| Alchemist.library.unit_names c}.flatten.uniq
   MULTIWORD_UNITS = POSSIBLE_UNITS.collect{|u| u.to_s}.grep(/_/)
   
   class << self
@@ -138,9 +138,9 @@ module Herbalist
       end
       
       # try si units with prefixes (kilo, deca etc)
-      Alchemist.unit_prefixes.each do |prefix, value|
+      Alchemist.library.unit_prefixes.each do |prefix, value|
         if token.word =~ /^#{prefix.to_s}.+/i
-          Alchemist.si_units.each do |unit|
+          Alchemist.library.si_units.each do |unit|
             if unit.to_s=~/#{token.word.gsub(/^#{prefix.to_s}/i,'')}$/i
               return Tag.new(:unit, "#{prefix}#{unit}") 
             end
